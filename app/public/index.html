@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
+  </head>
+  <body>
+    <div id="app">
+      <el-upload
+        action="/uploadFile"
+        list-type="picture-card"
+        :on-preview="handlePictureCardPreview"
+        :on-remove="handleRemove"
+        :on-success="hanldeSucceed"
+        accept="image/*"
+      >
+        <i class="el-icon-plus"></i>
+      </el-upload>
+      <el-table :data="tableData" stripe style="width: 100%">
+        <el-table-column prop="fileName" label="文件名称">
+          <template slot-scope="scope">
+            <el-tag type="primary" class="pointer" @click="handleDown(scope.row.fileName)"
+              >{{scope.row.fileName}}</el-tag
+            >
+          </template>
+        </el-table-column>
+        <el-table-column prop="ossUrl" label="地址">
+          <template slot-scope="scope">
+            <el-link type="primary" :href="scope.row.ossUrl" target="_blank">{{scope.row.ossUrl}}</el-link>
+          </template>
+        </el-table-column>
+        <el-table-column prop="hash" label="文件hsash"> </el-table-column>
+        <el-table-column prop="ossFileName" label="ossFileName"> </el-table-column>
+        <el-table-column prop="fileSize" label="文件大小"> </el-table-column>
+        <el-table-column prop="fileType" label="文件格式"> </el-table-column>
+      </el-table>
+      <el-dialog :visible.sync="dialogVisible">
+        <img width="100%" :src="dialogImageUrl" alt="" />
+      </el-dialog>
+    </div>
+  </body>
+  <!-- import axios  -->
+  <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.20.0-0/axios.js"></script>
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data() {
+        return {
+          dialogImageUrl: '',
+          dialogVisible: false,
+          tableData: []
+        }
+      },
+      methods: {
+        handleRemove(file, fileList) {
+          this.removeList(file)
+        },
+        removeList(file) {
+          this.tableData = this.tableData.filter(item => {
+            return item.fileName !== file.name
+          })
+        },
+        handlePictureCardPreview(file) {
+          this.dialogImageUrl = file.url
+          this.dialogVisible = true
+        },
+        hanldeSucceed(res) {
+          if (res.code === 200) {
+            this.tableData.push(res.data)
+          }
+        },
+        async handleDown(fileName) {
+          // const res = await axios.get(`/download`, { params: { fileName }, responseType: 'blob' })
+          // this.saveFile(res.data, fileName)
+        },
+        saveFile(data, fileName = null) {
+          if (!data) return
+          // 下载文件
+          let url = window.URL.createObjectURL(new Blob([data]))
+          console.log(url)
+          let link = document.createElement('a')
+          link.style.display = 'none'
+          link.href = url
+          fileName && link.setAttribute('download', fileName)
+          document.body.appendChild(link)
+          link.click()
+        }
+      }
+    })
+  </script>
+  <style>
+    .pointer {
+      cursor: pointer;
+    }
+  </style>
+</html>
