@@ -20,4 +20,7 @@ module.exports = app => {
   router.del('/delUser', controller.user.destroy)
   router.put('/updateUser', controller.user.update)
   router.get('/getUserDetail', controller.user.show)
+
+  // login
+  router.post('/login', controller.login.index)
 }

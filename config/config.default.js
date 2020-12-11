@@ -17,7 +17,7 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1605688556461_3336'
 
   // add your middleware config here
-  config.middleware = []
+  config.middleware = ['logger']
   config.multipart = {
     mode: 'stream',
     fileModeMatch: /^\/uploadFile/,

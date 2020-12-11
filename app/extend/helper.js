@@ -5,6 +5,13 @@ const fs = require('fs')
 const Duplex = require('stream').Duplex
 
 module.exports = {
+  filterSearchParams(params, validList) {
+    const data = {}
+    validList.forEach(item => {
+      params[item] && (data[item] = params[item])
+    })
+    return data
+  },
   /**
    *
    * @param {*} filePath 文件路径/数据流

@@ -14,7 +14,8 @@
     "egg-mongoose": "^3.3.1",
     "egg-oss": "^2.0.0",
     "egg-scripts": "^2.11.0",
-    "egg-validate": "^2.0.2"
+    "egg-validate": "^2.0.2",
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
     "autod": "^3.0.1",

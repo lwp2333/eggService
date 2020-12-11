@@ -20,7 +20,7 @@ const Controller = require('egg').Controller
 class UserController extends Controller {
   async index() {
     const { ctx } = this
-    const res = await ctx.model.User.find({})
+    const res = await ctx.model.User.find()
     ctx.helper.SuccessRes(res)
   }
   async indexByPage() {
@@ -29,13 +29,16 @@ class UserController extends Controller {
     if (errorInfo) {
       ctx.helper.ErrorValid(errorInfo)
     } else {
-      let { pageNum, pageSize } = ctx.request.query
+      let { pageNum, pageSize, ...other } = ctx.request.query
+      const searchParams = ctx.helper.filterSearchParams(other, ['name', 'age', 'sex'])
       pageNum = Number(pageNum)
       pageSize = Number(pageSize)
       const offset = (pageNum - 1) * pageSize
-      const totalRecord = await ctx.model.User.find({}).count()
+      const totalRecord = await ctx.model.User.find({ ...searchParams }).count()
       const totalPage = Math.ceil(totalRecord / pageSize)
-      const list = await ctx.model.User.find({}).skip(offset).limit(pageSize)
+      const list = await ctx.model.User.find({ ...searchParams })
+        .skip(offset)
+        .limit(pageSize)
       const data = {
         pageNum,
         pageSize,
