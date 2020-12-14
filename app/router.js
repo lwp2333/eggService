@@ -23,4 +23,5 @@ module.exports = app => {
 
   // login
   router.post('/login', controller.login.index)
+  router.post('/autoLogin', controller.login.autoLogin)
 }

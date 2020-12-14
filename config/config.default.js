@@ -17,7 +17,17 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1605688556461_3336'
 
   // add your middleware config here
-  config.middleware = ['logger']
+  config.middleware = ['logger', 'auth']
+  config.logger = {
+    enable: false
+  }
+  config.auth = {
+    enable: true,
+    ignore: ctx => {
+      const ignoreApiList = ['/login', '/autoLogin', '/uploadFile', '/uploadStream'] // 忽略auth中间件的请求地址列表
+      return ignoreApiList.includes(ctx.request.url)
+    }
+  }
   config.multipart = {
     mode: 'stream',
     fileModeMatch: /^\/uploadFile/,
@@ -95,7 +105,12 @@ module.exports = appInfo => {
   }
   // add your user config here
   const userConfig = {
-    appName: 'eggoss' // 项目名称
+    appName: 'eggoss', // 项目名称
+    jwtConfig: {
+      jwtSecret: 'lwp2333',
+      accessTokenExpiresIn: 30 * 1 * 1, // 数字单位s
+      refreshTokenExpiresIn: 60 * 60 * 12
+    }
   }
 
   return {

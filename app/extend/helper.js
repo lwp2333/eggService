@@ -5,6 +5,11 @@ const fs = require('fs')
 const Duplex = require('stream').Duplex
 
 module.exports = {
+  /**
+   *
+   * @param {*} params 参数
+   * @param {*} validList  有效参数
+   */
   filterSearchParams(params, validList) {
     const data = {}
     validList.forEach(item => {
@@ -112,5 +117,15 @@ module.exports = {
       data,
       message: `${msg}字段缺失，请求失败！`
     }
+  },
+  WarnAuthvalid() {
+    this.ctx.body = {
+      code: 403,
+      data: null,
+      message: '正在刷新token登录'
+    }
+  },
+  ErrorAuthValid() {
+    this.ctx.status = 403 // 登录失效
   }
 }

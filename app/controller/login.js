@@ -2,7 +2,10 @@
 
 const loginRule = {
   userName: 'string',
-  passWord: 'string'
+  password: 'string'
+}
+const autoLoginRule = {
+  refreshToken: 'string'
 }
 const jwt = require('jsonwebtoken')
 const Controller = require('egg').Controller
@@ -10,38 +13,51 @@ const Controller = require('egg').Controller
 class LoginController extends Controller {
   async index() {
     const { ctx, app } = this
-    const { userName, passWord } = ctx.request.body
-    console.log({ userName, passWord })
+    const { userName, password } = ctx.request.body
     const errorInfo = app.validator.validate(loginRule, ctx.request.body)
     if (errorInfo) {
       ctx.helper.ErrorRes(errorInfo, '登录')
+      return
     }
     const data = {
       userName,
-      passWord
+      password
     }
-    const secret = 'lwp2333'
-    const token = jwt.sign(data, secret, { expiresIn: '1d' })
-    console.log(token)
-    ctx.cookies.set('jwtoken', token, {
-      httpOnly: false,
-      signed: false,
-      encrypt: false,
-      maxAge: 1000 * 60 * 60 * 24
-    })
-    // ctx.cookies.set('userName', userName, {
-    //   httpOnly: false, // 是否只允许http可读
-    //   signed: false, // 签名处理
-    //   encrypt: true, // 不做加密
-    //   maxAge: 1000 * 60 * 60 * 24
-    // })
-    // ctx.cookies.set('passWord', passWord, {
-    //   httpOnly: false, // 是否只允许http可读
-    //   signed: false, // 签名处理
-    //   encrypt: true, // 不做加密
-    //   maxAge: 1000 * 60 * 60 * 24
-    // })
-    ctx.helper.SuccessRes(null, '登录')
+    const { jwtSecret, accessTokenExpiresIn, refreshTokenExpiresIn } = app.config.jwtConfig
+    const accessToken = jwt.sign(data, jwtSecret, { expiresIn: accessTokenExpiresIn })
+    const refreshToken = jwt.sign(data, jwtSecret, { expiresIn: refreshTokenExpiresIn })
+    const res = {
+      userName,
+      accessToken,
+      refreshToken
+    }
+    ctx.helper.SuccessRes(res, '登录')
+  }
+  async autoLogin() {
+    const { ctx, app } = this
+    const { refreshToken } = ctx.request.body
+    const errorInfo = app.validator.validate(autoLoginRule, ctx.request.body)
+    if (errorInfo) {
+      ctx.helper.ErrorRes(errorInfo, '自动登录')
+      return
+    }
+    const { jwtSecret, accessTokenExpiresIn, refreshTokenExpiresIn } = app.config.jwtConfig
+    let jwtRes = null
+    try {
+      jwtRes = jwt.verify(refreshToken, jwtSecret)
+      const { userName, password } = jwtRes
+      const data = { userName, password }
+      const accessTokenNew = jwt.sign(data, jwtSecret, { expiresIn: accessTokenExpiresIn })
+      const refreshTokenNew = jwt.sign(data, jwtSecret, { expiresIn: refreshTokenExpiresIn })
+      const res = {
+        userName,
+        accessToken: accessTokenNew,
+        refreshToken: refreshTokenNew
+      }
+      ctx.helper.SuccessRes(res, '自动登录')
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 
