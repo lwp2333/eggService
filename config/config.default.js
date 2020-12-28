@@ -108,7 +108,7 @@ module.exports = appInfo => {
     appName: 'eggoss', // 项目名称
     jwtConfig: {
       jwtSecret: 'lwp2333',
-      accessTokenExpiresIn: 60 * 60 * 4, // 数字单位s
+      accessTokenExpiresIn: 60 * 6 * 4, // 数字单位s
       refreshTokenExpiresIn: 60 * 60 * 12
     }
   }
