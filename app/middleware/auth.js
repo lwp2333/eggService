@@ -19,7 +19,7 @@ module.exports = () => {
     try {
       accesstokenRes = jwt.verify(accesstoken, jwtSecret)
     } catch (error) {
-      ctx.helper.WarnAuthvalid() // 告诉前端需要
+      ctx.helper.WarnAuthvalid() // 告诉前端需要刷新token
       return
     }
     console.log(accesstokenRes, refreshtokenRes)

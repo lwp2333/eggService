@@ -24,7 +24,7 @@ module.exports = appInfo => {
   config.auth = {
     enable: true,
     ignore: ctx => {
-      const ignoreApiList = ['/login', '/autoLogin', '/uploadFile', '/uploadStream'] // 忽略auth中间件的请求地址列表
+      const ignoreApiList = ['/', '/login', '/autoLogin', '/uploadFile', '/uploadStream'] // 忽略auth中间件的请求地址列表
       return ignoreApiList.includes(ctx.request.url)
     }
   }
@@ -108,7 +108,7 @@ module.exports = appInfo => {
     appName: 'eggoss', // 项目名称
     jwtConfig: {
       jwtSecret: 'lwp2333',
-      accessTokenExpiresIn: 30 * 1 * 1, // 数字单位s
+      accessTokenExpiresIn: 60 * 60 * 4, // 数字单位s
       refreshTokenExpiresIn: 60 * 60 * 12
     }
   }

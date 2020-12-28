@@ -34,7 +34,7 @@ class UserController extends Controller {
       pageNum = Number(pageNum)
       pageSize = Number(pageSize)
       const offset = (pageNum - 1) * pageSize
-      const totalRecord = await ctx.model.User.find({ ...searchParams }).count()
+      const totalRecord = await ctx.model.User.find({ ...searchParams }).countDocuments()
       const totalPage = Math.ceil(totalRecord / pageSize)
       const list = await ctx.model.User.find({ ...searchParams })
         .skip(offset)
