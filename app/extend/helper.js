@@ -12,21 +12,21 @@ module.exports = {
    * @param {*} pid 父节点
    */
   listToTree(data = [], id = '_id', pid = 'parentId') {
+    const treeList = JSON.parse(JSON.stringify(data)) // 深度克隆一次查询回来的结果
     const map = {}
     const result = []
     // 引用保存一份
-    data.forEach(item => {
+    treeList.forEach(item => {
       map[item[id]] = item
     })
-    console.log(map)
-    console.log(data)
-    data.forEach(item => {
+    treeList.forEach(item => {
       const parent = map[item[pid]]
       if (parent) {
         if (!parent.children) {
           parent.children = []
         }
         parent.children.push(item)
+        console.log(parent)
       } else {
         result.push(item)
       }
