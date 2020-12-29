@@ -7,6 +7,34 @@ const Duplex = require('stream').Duplex
 module.exports = {
   /**
    *
+   * @param {*} data 列表数据
+   * @param {*} id 主键
+   * @param {*} pid 父节点
+   */
+  listToTree(data = [], id = '_id', pid = 'parentId') {
+    const map = {}
+    const result = []
+    // 引用保存一份
+    data.forEach(item => {
+      map[item[id]] = item
+    })
+    console.log(map)
+    console.log(data)
+    data.forEach(item => {
+      const parent = map[item[pid]]
+      if (parent) {
+        if (!parent.children) {
+          parent.children = []
+        }
+        parent.children.push(item)
+      } else {
+        result.push(item)
+      }
+    })
+    return result
+  },
+  /**
+   *
    * @param {*} params 参数
    * @param {*} validList  有效参数
    */
