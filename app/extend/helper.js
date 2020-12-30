@@ -12,7 +12,7 @@ module.exports = {
    * @param {*} pid 父节点
    */
   listToTree(data = [], id = '_id', pid = 'parentId') {
-    const treeList = JSON.parse(JSON.stringify(data)) // 深度克隆一次查询回来的结果
+    const treeList = JSON.parse(JSON.stringify(data || [])) // 深度克隆一次查询回来的结果
     const map = {}
     const result = []
     // 引用保存一份

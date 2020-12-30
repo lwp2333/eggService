@@ -25,15 +25,14 @@ module.exports = app => {
   router.post('/login', controller.login.index)
   router.post('/autoLogin', controller.login.autoLogin)
 
-  // 用户权限中心
-  // --菜单配置
+  // 用户权限中心 --菜单配置
   router.get('/getMenuList', controller.userCenter.menu.index)
   router.post('/createMenu', controller.userCenter.menu.create)
   router.del('/delMenu', controller.userCenter.menu.destroy)
   router.put('/updateMenu', controller.userCenter.menu.update)
   router.get('/getMenu', controller.userCenter.menu.show)
-  // 用户权限中心
-  // --角色配置
+
+  // 用户权限中心 --角色配置
   router.get('/getRoleList', controller.userCenter.role.index)
   router.post('/createRole', controller.userCenter.role.create)
   router.del('/delRole', controller.userCenter.role.destroy)
