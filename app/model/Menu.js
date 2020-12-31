@@ -18,7 +18,8 @@ module.exports = app => {
           }
         }
       },
-      parentId: { type: String, default: null }
+      parentId: { type: String, default: null },
+      order: { type: Number, default: null }
     },
     { versionKey: false }
   )

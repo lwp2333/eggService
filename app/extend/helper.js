@@ -128,7 +128,7 @@ module.exports = {
       this.ctx.body = {
         code: 204,
         data,
-        message: `${msg}删除失败，该条记录不存在！`
+        message: `${msg}删除失败，或该条记录不存在！`
       }
     }
   },
@@ -143,7 +143,7 @@ module.exports = {
     this.ctx.body = {
       code: 302,
       data,
-      message: `${msg}字段缺失，请求失败！`
+      message: `${msg}字段校验失败，请求失败！`
     }
   },
   WarnAuthvalid() {
