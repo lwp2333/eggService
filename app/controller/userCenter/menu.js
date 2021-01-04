@@ -132,12 +132,68 @@ class MenuController extends Controller {
         await ctx.model.Menu.findOneAndUpdate({ _id: drapNodeId }, { parentId: dropNodeId })
       }
     }
-    try {
-      // 进行数据分析及位置调整
-    } catch (error) {
-      ctx.helper.ErrorRes('菜单配置修改')
-    }
+
     ctx.helper.UpdateRes(null, '菜单配置')
+  }
+  async dragDrop2() {
+    const { ctx, app } = this
+    const errorInfo = app.validator.validate(dragDropRule, ctx.request.body)
+    if (errorInfo) {
+      ctx.helper.ErrorValid(errorInfo)
+      return
+    }
+    const { drapNodeId, dropNodeId, positionType } = ctx.request.body
+    // 进行数据取回
+    const dragNode = await ctx.model.Menu.findOne({ _id: drapNodeId })
+    const dropNode = await ctx.model.Menu.findOne({ _id: dropNodeId })
+    if (!dragNode || !dropNode) {
+      // 相关节点不存在
+      ctx.helper.ErrorRes(null, '相关节点不存在，菜单配置修改')
+      return
+    }
+    const { title: dragNodeTitle, order: dragNodeOrder, parentId: dragNodeParentId } = dragNode
+    const { title: dropNodeTitle, order: dropNodeOrder, parentId: dropNodeParentId } = dropNode
+    // 不是同级菜单，且不是拖到到内部，拖拽node的父节点改为目标node的父节点
+    if (dragNodeParentId !== dropNodeParentId && positionType !== 'inside') {
+      console.log(dragNodeTitle, dropNodeTitle, '不是同级菜单，不是拖拽到内部')
+      await ctx.model.Menu.findOneAndUpdate({ _id: drapNodeId }, { parentId: dropNodeParentId })
+    }
+    // 分位置进行逻辑处理
+    if (positionType === 'top') {
+      console.log(dragNodeTitle, '移到', dropNodeTitle, '上面')
+      if (dragNodeOrder > dropNodeOrder) {
+        // 从下往上拖拽, 更改影响区间
+        await ctx.model.Menu.updateMany({ order: { $gte: dropNodeOrder, $lt: dragNodeOrder } }, { $inc: { order: 1 } })
+        // 拖拽node的order改为目标node的order（注意操作滞后）
+        await ctx.model.Menu.findOneAndUpdate({ _id: drapNodeId }, { order: dropNodeOrder })
+      } else {
+        // 从上往下拖拽, 更改影响区间
+        await ctx.model.Menu.updateMany({ order: { $gt: dragNodeOrder, $lte: dropNodeOrder } }, { $inc: { order: -1 } })
+        // 拖拽node的order改为目标node的order（注意操作滞后）
+        await ctx.model.Menu.findOneAndUpdate({ _id: drapNodeId }, { order: dropNodeOrder - 1 })
+      }
+    } else if (positionType === 'inside') {
+      console.log(dragNodeTitle, '移到', dropNodeTitle, '里面')
+      // 1. 放置在最后
+      const maxOrderNode = await ctx.model.Menu.find().sort({ order: -1 }).limit(1)
+      console.log(maxOrderNode)
+      const { order: maxOrder } = maxOrderNode[0]
+      // 2. 拖拽node 的父节点改为目标node 的节点id
+      await ctx.model.Menu.findOneAndUpdate({ _id: drapNodeId }, { parentId: dropNodeId, order: maxOrder + 1 })
+    } else {
+      console.log(dragNodeTitle, '移到', dropNodeTitle, '下面')
+      if (dragNodeOrder > dropNodeOrder) {
+        // 从下往上拖拽, 更改影响区间
+        await ctx.model.Menu.updateMany({ order: { $gt: dropNodeOrder, $lt: dragNodeOrder } })
+        // 拖拽node的order改为目标node的order+1（注意操作滞后）
+        await ctx.model.Menu.findOneAndUpdate({ _id: drapNodeId }, { order: dropNodeOrder + 1 })
+      } else {
+        // 从上往下拖拽, 更改影响区间
+        await ctx.model.Menu.updateMany({ order: { $gt: dragNodeOrder, $lte: dropNodeOrder } })
+        // 拖拽node的order改为目标node的order（注意操作滞后）
+        await ctx.model.Menu.findOneAndUpdate({ _id: drapNodeId }, { order: dropNodeOrder })
+      }
+    }
   }
 }
 
