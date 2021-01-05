@@ -32,6 +32,7 @@ module.exports = app => {
   router.put('/updateMenu', controller.userCenter.menu.update)
   router.get('/getMenu', controller.userCenter.menu.show)
   router.post('/dragDropMenu', controller.userCenter.menu.dragDrop)
+  router.get('/getMenuFolder', controller.userCenter.menu.showFolder)
 
   // 用户权限中心 --角色配置
   router.get('/getRoleList', controller.userCenter.role.index)

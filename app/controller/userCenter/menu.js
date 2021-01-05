@@ -3,9 +3,9 @@
 const createRule = {
   title: 'string',
   path: 'string',
-  isLeaf: 'string',
+  isLeaf: 'boolean',
   iconType: 'string',
-  parentId: 'string'
+  parentId: 'string?'
 }
 const updateOrDelRule = {
   _id: 'string'
@@ -24,6 +24,12 @@ class MenuController extends Controller {
     const data = ctx.helper.listToTree(res)
     ctx.helper.SuccessRes(data)
   }
+  async showFolder() {
+    const { ctx } = this
+    const res = await ctx.model.Menu.find({ isLeaf: false })
+    const data = ctx.helper.listToTree(res)
+    ctx.helper.SuccessRes(data)
+  }
   async create() {
     const { ctx, app } = this
     const errorInfo = app.validator.validate(createRule, ctx.request.body)
@@ -31,7 +37,9 @@ class MenuController extends Controller {
       ctx.helper.ErrorValid(errorInfo)
       return
     }
-    const res = await ctx.model.Menu.create(ctx.request.body)
+    const maxOrderList = await ctx.model.Menu.find().sort({ order: -1 }).limit(1)
+    const { order: maxOrder } = maxOrderList[0]
+    const res = await ctx.model.Menu.create({ ...ctx.request.body, order: maxOrder + 1 })
     ctx.helper.SuccessRes(res)
   }
   async update() {

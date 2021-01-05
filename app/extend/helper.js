@@ -26,7 +26,6 @@ module.exports = {
           parent.children = []
         }
         parent.children.push(item)
-        console.log(parent)
       } else {
         result.push(item)
       }
