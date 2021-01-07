@@ -63,15 +63,35 @@ class MenuController extends Controller {
     const res = await ctx.model.Menu.findOne({ _id: ctx.request.query._id })
     ctx.helper.SuccessRes(res)
   }
+  async queryAllChild(_id) {
+    const { ctx } = this
+    const allIds = [_id]
+    const childNode = await ctx.model.Menu.find({ parentId: _id })
+    if (childNode && childNode.length > 0) {
+      for (const item of childNode) {
+        // 递归
+        allIds.push(...(await this.queryAllChild(item._id)))
+      }
+    }
+    return allIds
+  }
   async destroy() {
     const { ctx, app } = this
-    const errorInfo = app.validator.validate(updateOrDelRule, ctx.request.query)
+    const errorInfo = app.validator.validate(updateOrDelRule, ctx.request.body)
     if (errorInfo) {
       ctx.helper.ErrorValid(errorInfo)
       return
     }
-    const res = await ctx.model.Menu.deleteOne({ _id: ctx.request.query._id })
-    ctx.helper.DelRes(res, '菜单')
+    const { _id } = ctx.request.body
+    const allIdList = await this.queryAllChild(_id)
+    // 循环删除
+    for (const _id of allIdList) {
+      await ctx.model.Menu.deleteOne({ _id })
+    }
+    const data = {
+      deletedCount: allIdList.length
+    }
+    ctx.helper.DelRes(data, '菜单')
   }
   async dragDrop() {
     const { ctx, app } = this
