@@ -36,8 +36,10 @@ module.exports = app => {
 
   // 用户权限中心 --角色配置
   router.get('/getRoleList', controller.userCenter.role.index)
+  router.get('/getRoleListByPage', controller.userCenter.role.indexByPage)
   router.post('/createRole', controller.userCenter.role.create)
   router.del('/delRole', controller.userCenter.role.destroy)
   router.put('/updateRole', controller.userCenter.role.update)
-  router.get('/getRole', controller.userCenter.role.show)
+  router.get('/getRoleDetail', controller.userCenter.role.show)
+  router.get('/getRoleMenuTree', controller.userCenter.role.showMenuTree)
 }

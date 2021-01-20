@@ -22,9 +22,9 @@ module.exports = appInfo => {
     enable: false
   }
   config.auth = {
-    enable: true,
+    enable: false,
     ignore: ctx => {
-      const ignoreApiList = ['/', '/login', '/autoLogin', '/uploadFile', '/uploadStream'] // 忽略auth中间件的请求地址列表
+      const ignoreApiList = ['/', '/login', '/autoLogin', '/uploadFile', '/uploadStream', '/downloadFile'] // 忽略auth中间件的请求地址列表
       return ignoreApiList.includes(ctx.request.url)
     }
   }
