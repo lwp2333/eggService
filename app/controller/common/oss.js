@@ -119,6 +119,7 @@ class OssController extends Controller {
      * 表里没有相关记录
      */
     if (!fileInfo) {
+      ctx.helper.ErrorRes(null, '文件找不到')
       return
     }
 

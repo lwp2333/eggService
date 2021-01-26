@@ -42,4 +42,7 @@ module.exports = app => {
   router.put('/updateRole', controller.userCenter.role.update)
   router.get('/getRoleDetail', controller.userCenter.role.show)
   router.get('/getRoleMenuTree', controller.userCenter.role.showMenuTree)
+
+  // 导出excel 示例
+  router.get('/exportExcel', controller.exportExecel.index)
 }
