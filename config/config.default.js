@@ -25,7 +25,7 @@ module.exports = appInfo => {
     enable: true,
     ignore: ctx => {
       const ignoreApiList = ['/', '/login', '/autoLogin', '/uploadFile', '/uploadStream', '/downloadFile'] // 忽略auth中间件的请求地址列表
-      return ignoreApiList.includes(ctx.request.url)
+      return ignoreApiList.includes(ctx.path)
     }
   }
   config.multipart = {

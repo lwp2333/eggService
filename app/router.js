@@ -8,7 +8,6 @@ module.exports = app => {
   router.get('/', controller.home.index)
 
   // Oss
-
   router.post('/uploadFile', controller.common.oss.uploadFile)
   router.post('/uploadStream', controller.common.oss.uploadStream)
   router.get('/downloadFile', controller.common.oss.downloadFile)
@@ -42,7 +41,4 @@ module.exports = app => {
   router.put('/updateRole', controller.userCenter.role.update)
   router.get('/getRoleDetail', controller.userCenter.role.show)
   router.get('/getRoleMenuTree', controller.userCenter.role.showMenuTree)
-
-  // 导出excel 示例
-  router.get('/exportExcel', controller.exportExecel.index)
 }
