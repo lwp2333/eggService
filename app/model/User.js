@@ -12,8 +12,10 @@ module.exports = app => {
       age: { type: String, default: '' },
       sex: { type: String, default: '' },
       tags: { type: Array, default: [] },
+      email: { type: String, default: '' },
       password: { type: String, default: '' },
-      roles: { type: Array, default: [] }
+      roles: { type: Array, default: [] },
+      status: { type: Number, default: 200 }
     },
     { versionKey: false }
   )

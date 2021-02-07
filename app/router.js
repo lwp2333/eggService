@@ -7,31 +7,25 @@ module.exports = app => {
   const { router, controller } = app
   router.get('/', controller.home.index)
 
+  // login
+  router.post('/login', controller.login.index)
+  router.post('/autoLogin', controller.login.autoLogin)
+
+  // register
+  router.post('/register', controller.register.index)
+
   // Oss
   router.post('/uploadFile', controller.common.oss.uploadFile)
   router.post('/uploadStream', controller.common.oss.uploadStream)
   router.get('/downloadFile', controller.common.oss.downloadFile)
 
   // User
-  router.get('/getUserList', controller.user.index)
-  router.get('/getUserListByPage', controller.user.indexByPage)
-  router.post('/createUser', controller.user.create)
-  router.del('/delUser', controller.user.destroy)
-  router.put('/updateUser', controller.user.update)
-  router.get('/getUserDetail', controller.user.show)
-
-  // login
-  router.post('/login', controller.login.index)
-  router.post('/autoLogin', controller.login.autoLogin)
-
-  // 用户权限中心 --菜单配置
-  router.get('/getMenuList', controller.userCenter.menu.index)
-  router.post('/createMenu', controller.userCenter.menu.create)
-  router.del('/delMenu', controller.userCenter.menu.destroy)
-  router.put('/updateMenu', controller.userCenter.menu.update)
-  router.get('/getMenu', controller.userCenter.menu.show)
-  router.post('/dragDropMenu', controller.userCenter.menu.dragDrop)
-  router.get('/getMenuFolder', controller.userCenter.menu.showFolder)
+  router.get('/getUserList', controller.userCenter.user.index)
+  router.get('/getUserListByPage', controller.userCenter.user.indexByPage)
+  router.post('/createUser', controller.userCenter.user.create)
+  router.del('/delUser', controller.userCenter.user.destroy)
+  router.put('/updateUser', controller.userCenter.user.update)
+  router.get('/getUserDetail', controller.userCenter.user.show)
 
   // 用户权限中心 --角色配置
   router.get('/getRoleList', controller.userCenter.role.index)
@@ -41,4 +35,13 @@ module.exports = app => {
   router.put('/updateRole', controller.userCenter.role.update)
   router.get('/getRoleDetail', controller.userCenter.role.show)
   router.get('/getRoleMenuTree', controller.userCenter.role.showMenuTree)
+
+  // 用户权限中心 --菜单配置
+  router.get('/getMenuList', controller.userCenter.menu.index)
+  router.post('/createMenu', controller.userCenter.menu.create)
+  router.del('/delMenu', controller.userCenter.menu.destroy)
+  router.put('/updateMenu', controller.userCenter.menu.update)
+  router.get('/getMenu', controller.userCenter.menu.show)
+  router.post('/dragDropMenu', controller.userCenter.menu.dragDrop)
+  router.get('/getMenuFolder', controller.userCenter.menu.showFolder)
 }

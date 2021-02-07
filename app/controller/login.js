@@ -1,7 +1,7 @@
 'use strict'
 
 const loginRule = {
-  userName: 'string',
+  name: 'string',
   password: 'string'
 }
 const autoLoginRule = {
@@ -13,21 +13,31 @@ const Controller = require('egg').Controller
 class LoginController extends Controller {
   async index() {
     const { ctx, app } = this
-    const { userName, password } = ctx.request.body
+    const { name, password } = ctx.request.body
     const errorInfo = app.validator.validate(loginRule, ctx.request.body)
     if (errorInfo) {
-      ctx.helper.ErrorRes(errorInfo, '登录')
+      ctx.helper.ErrorValid(errorInfo, '登录')
+      return
+    }
+    const validUser = await ctx.model.User.findOne({ name })
+    if (!validUser) {
+      ctx.helper.ErrorRes(null, '用户不存在，登录')
+      return
+    }
+    const { password: remotePass } = validUser
+    if (remotePass !== password) {
+      ctx.helper.ErrorRes(null, '密码错误，登录')
       return
     }
     const data = {
-      userName,
+      name,
       password
     }
     const { jwtSecret, accessTokenExpiresIn, refreshTokenExpiresIn } = app.config.jwtConfig
     const accessToken = jwt.sign(data, jwtSecret, { expiresIn: accessTokenExpiresIn })
     const refreshToken = jwt.sign(data, jwtSecret, { expiresIn: refreshTokenExpiresIn })
     const res = {
-      userName,
+      name,
       accessToken,
       refreshToken
     }
@@ -45,12 +55,12 @@ class LoginController extends Controller {
     let jwtRes = null
     try {
       jwtRes = jwt.verify(refreshToken, jwtSecret)
-      const { userName, password } = jwtRes
-      const data = { userName, password }
+      const { name, password } = jwtRes
+      const data = { name, password }
       const accessTokenNew = jwt.sign(data, jwtSecret, { expiresIn: accessTokenExpiresIn })
       const refreshTokenNew = jwt.sign(data, jwtSecret, { expiresIn: refreshTokenExpiresIn })
       const res = {
-        userName,
+        name,
         accessToken: accessTokenNew,
         refreshToken: refreshTokenNew
       }
