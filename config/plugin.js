@@ -21,5 +21,13 @@ module.exports = {
   oss: {
     enable: true,
     package: 'egg-oss'
+  },
+  io: {
+    enable: true,
+    package: 'egg-socket.io'
+  },
+  redis: {
+    enable: true,
+    package: 'egg-redis'
   }
 }

@@ -4,7 +4,7 @@
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
-  const { router, controller } = app
+  const { router, controller, io } = app
   router.get('/', controller.home.index)
 
   // login
@@ -44,4 +44,7 @@ module.exports = app => {
   router.get('/getMenu', controller.userCenter.menu.show)
   router.post('/dragDropMenu', controller.userCenter.menu.dragDrop)
   router.get('/getMenuFolder', controller.userCenter.menu.showFolder)
+
+  // socket.io
+  io.of('/').route('exchange', io.controller.nsp.exchange)
 }

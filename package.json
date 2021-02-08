@@ -13,7 +13,9 @@
     "egg-mock": "^3.25.1",
     "egg-mongoose": "^3.3.1",
     "egg-oss": "^2.0.0",
+    "egg-redis": "^2.4.0",
     "egg-scripts": "^2.11.0",
+    "egg-socket.io": "^4.1.6",
     "egg-validate": "^2.0.2",
     "jsonwebtoken": "^8.5.1"
   },
@@ -30,9 +32,9 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --title=egg-server-eggoss",
+    "start": "egg-scripts start --daemon --title=egg-server-eggoss --sticky",
     "stop": "egg-scripts stop --title=egg-server-eggoss",
-    "dev": "egg-bin dev",
+    "dev": "egg-bin dev --sticky",
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",
     "test-local": "egg-bin test",

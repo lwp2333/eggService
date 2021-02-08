@@ -1,101 +1,182 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- import CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Demo</title>
+    <style>
+      body {
+        overflow-x: hidden;
+      }
+      .console-wrapper {
+        margin: auto;
+        padding: 12px;
+        width: 80%;
+        background: #eee;
+      }
+      body {
+        margin: 0;
+        padding-bottom: 3rem;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      }
+
+      #form {
+        background: rgba(0, 0, 0, 0.15);
+        padding: 0.25rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        height: 3rem;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+      }
+      #input {
+        border: none;
+        padding: 0 1rem;
+        flex-grow: 1;
+        border-radius: 2rem;
+        margin: 0.25rem;
+      }
+      #input:focus {
+        outline: none;
+      }
+      #form > button {
+        background: #333;
+        border: none;
+        padding: 0 1rem;
+        margin: 0.25rem;
+        border-radius: 3px;
+        outline: none;
+        color: #fff;
+      }
+
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      #messages > li {
+        padding: 0.5rem 1rem;
+      }
+      #messages > li:nth-child(odd) {
+        background: #efefef;
+      }
+    </style>
   </head>
+
   <body>
-    <div id="app">
-      <el-upload
-        action="/uploadFile"
-        list-type="picture-card"
-        :on-preview="handlePictureCardPreview"
-        :on-remove="handleRemove"
-        :on-success="hanldeSucceed"
-        accept="image/*"
-      >
-        <i class="el-icon-plus"></i>
-      </el-upload>
-      <el-table :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="fileName" label="文件名称">
-          <template slot-scope="scope">
-            <el-tag type="primary" class="pointer" @click="handleDown(scope.row.fileName)"
-              >{{scope.row.fileName}}</el-tag
-            >
-          </template>
-        </el-table-column>
-        <el-table-column prop="ossUrl" label="地址">
-          <template slot-scope="scope">
-            <el-link type="primary" :href="scope.row.ossUrl" target="_blank">{{scope.row.ossUrl}}</el-link>
-          </template>
-        </el-table-column>
-        <el-table-column prop="hash" label="文件hsash"> </el-table-column>
-        <el-table-column prop="ossFileName" label="ossFileName"> </el-table-column>
-        <el-table-column prop="fileSize" label="文件大小"> </el-table-column>
-        <el-table-column prop="fileType" label="文件格式"> </el-table-column>
-      </el-table>
-      <el-dialog :visible.sync="dialogVisible">
-        <img width="100%" :src="dialogImageUrl" alt="" />
-      </el-dialog>
+    <div class="console-wrapper">
+      <pre id="console"></pre>
     </div>
-  </body>
-  <!-- import axios  -->
-  <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.20.0-0/axios.js"></script>
-  <!-- import Vue before Element -->
-  <script src="https://unpkg.com/vue/dist/vue.js"></script>
-  <!-- import JavaScript -->
-  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-  <script>
-    new Vue({
-      el: '#app',
-      data() {
-        return {
-          dialogImageUrl: '',
-          dialogVisible: false,
-          tableData: []
-        }
-      },
-      methods: {
-        handleRemove(file, fileList) {
-          this.removeList(file)
-        },
-        removeList(file) {
-          this.tableData = this.tableData.filter(item => {
-            return item.fileName !== file.name
-          })
-        },
-        handlePictureCardPreview(file) {
-          this.dialogImageUrl = file.url
-          this.dialogVisible = true
-        },
-        hanldeSucceed(res) {
-          if (res.code === 200) {
-            this.tableData.push(res.data)
-          }
-        },
-        async handleDown(fileName) {
-          // const res = await axios.get(`/download`, { params: { fileName }, responseType: 'blob' })
-          // this.saveFile(res.data, fileName)
-        },
-        saveFile(data, fileName = null) {
-          if (!data) return
-          // 下载文件
-          let url = window.URL.createObjectURL(new Blob([data]))
-          console.log(url)
-          let link = document.createElement('a')
-          link.style.display = 'none'
-          link.href = url
-          fileName && link.setAttribute('download', fileName)
-          document.body.appendChild(link)
-          link.click()
+    <ul id="messages"></ul>
+    <form id="form" action=""><input id="input" autocomplete="off" /><button>Send</button></form>
+    <script src="https://cdn.bootcss.com/socket.io/2.1.0/socket.io.js"></script>
+    <script src="https://cdn.bootcss.com/lodash.js/4.17.10/lodash.min.js"></script>
+    <script>
+      // 不重要的代码，仅展示使用 - start
+      let con = document.querySelector('#console')
+      let doc = document.documentElement
+      let wh = document.documentElement.clientHeight
+
+      let _scrollToBottom = (function () {
+        return _.throttle(function () {
+          doc.scrollTop = doc.scrollHeight
+        }, 100)
+      })()
+
+      let scrollToBottom = function () {
+        if (doc.scrollHeight > wh) {
+          _scrollToBottom()
         }
       }
-    })
-  </script>
-  <style>
-    .pointer {
-      cursor: pointer;
-    }
-  </style>
+
+      let log = function () {
+        let msgList = [].slice.apply(arguments)
+        msgList = msgList.map(function (msg) {
+          if (typeof msg !== 'object') {
+            return msg
+          }
+          try {
+            return JSON.stringify(msg, null, 2)
+          } catch (error) {
+            return _.toString(msg)
+          }
+        })
+        con.innerText += new Date().toLocaleString() + ' ' + msgList.join('') + '\n'
+        scrollToBottom()
+        console.log.apply(null, arguments)
+      }
+
+      // 不重要的代码，仅展示使用 - end
+
+      window.onload = function () {
+        // init
+        let socket = io('/', {
+          // 实际使用中可以在这里传递参数
+          query: {
+            room: 'demo',
+            userId: `client_${Math.random()}`
+          },
+
+          transports: ['websocket']
+        })
+
+        socket.on('connect', () => {
+          let id = socket.id
+
+          log('#connect,', id, socket)
+
+          // 监听自身 id 以实现 p2p 通讯
+          socket.on(id, msg => {
+            log('#receive,', msg)
+          })
+        })
+
+        // 接收在线用户信息
+        socket.on('online', msg => {
+          log('#online,', msg)
+        })
+        // 接收信息
+        socket.on('exchange', msg => {
+          log('#exchange,', msg)
+        })
+        // 系统事件
+        socket.on('disconnect', msg => {
+          log('#disconnect', msg)
+        })
+
+        socket.on('disconnecting', () => {
+          log('#disconnecting')
+        })
+
+        socket.on('error', () => {
+          log('#error')
+        })
+
+        window.socket = socket
+      }
+
+      let form = document.getElementById('form')
+      let input = document.getElementById('input')
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault()
+        if (input.value) {
+          let data = {
+            target: 'exchange',
+            payload: {
+              userName: '胖鱼头',
+              avatarType: 4,
+              content: input.value
+            }
+          }
+          socket.emit('exchange', data)
+          input.value = ''
+        }
+      })
+    </script>
+  </body>
 </html>

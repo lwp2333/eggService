@@ -7,6 +7,28 @@ const Duplex = require('stream').Duplex
 module.exports = {
   /**
    *
+   * @param {*} action 行为
+   * @param {*} payload 数据
+   * @param {*} metadata 元信息
+   */
+  parseMsg(action, payload = {}, metadata = {}) {
+    const meta = Object.assign(
+      {},
+      {
+        timestamp: Date.now()
+      },
+      metadata
+    )
+    return {
+      meta,
+      data: {
+        action,
+        payload
+      }
+    }
+  },
+  /**
+   *
    * @param {*} data 列表数据
    * @param {*} id 主键
    * @param {*} pid 父节点
