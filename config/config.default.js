@@ -24,7 +24,7 @@ module.exports = appInfo => {
   config.auth = {
     enable: true,
     ignore: ctx => {
-      const ignoreApiList = ['/', '/login', '/autoLogin', '/register'] // 忽略auth中间件的请求地址列表
+      const ignoreApiList = ['/', '/login', '/autoLogin', '/register', '/svgCode'] // 忽略auth中间件的请求地址列表
       return ignoreApiList.includes(ctx.path)
     }
   }

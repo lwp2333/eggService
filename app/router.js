@@ -47,4 +47,7 @@ module.exports = app => {
 
   // socket.io
   io.of('/').route('exchange', io.controller.nsp.exchange)
+
+  // 验证码
+  router.get('/svgCode', controller.common.svgCode.index)
 }
