@@ -38,7 +38,12 @@ class MenuController extends Controller {
       return
     }
     const maxOrderList = await ctx.model.Menu.find().sort({ order: -1 }).limit(1)
-    const { order: maxOrder } = maxOrderList[0]
+    // 默认最大的order为0
+    let maxOrder = 0
+    if (maxOrderList.length > 0) {
+      const { order } = maxOrderList[0]
+      maxOrder = order
+    }
     const res = await ctx.model.Menu.create({ ...ctx.request.body, order: maxOrder + 1 })
     ctx.helper.SuccessRes(res)
   }
