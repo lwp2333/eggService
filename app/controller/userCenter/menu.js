@@ -26,7 +26,7 @@ class MenuController extends Controller {
   }
   async showFolder() {
     const { ctx } = this
-    const res = await ctx.model.Menu.find({ isLeaf: false })
+    const res = await ctx.model.Menu.find({ isLeaf: false }).sort({ order: 1 })
     const data = ctx.helper.listToTree(res)
     ctx.helper.SuccessRes(data)
   }
